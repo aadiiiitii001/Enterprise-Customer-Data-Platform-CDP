@@ -43,6 +43,7 @@ The solution enables a **unified customer view (Customer 360)** while ensuring d
 ---
 
 ## Project Structure
+``` text
 enterprise-cdp/
 │
 ├── ingestion/ # Source data ingestion scripts
@@ -51,7 +52,7 @@ enterprise-cdp/
 ├── governance/ # Data dictionary and access controls
 ├── workflows/ # Workflow orchestration
 └── README.md
-
+```
 ---
 
 ## Key Features
