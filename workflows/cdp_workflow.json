@@ -1,9 +1,63 @@
 {
   "name": "Enterprise_CDP_Workflow",
+  "format": "MULTI_TASK",
+  "max_concurrent_runs": 1,
+  "timeout_seconds": 0,
+
+  "job_clusters": [
+    {
+      "job_cluster_key": "cdp_cluster",
+      "new_cluster": {
+        "spark_version": "13.3.x-scala2.12",
+        "node_type_id": "Standard_DS3_v2",
+        "num_workers": 2,
+        "autotermination_minutes": 60
+      }
+    }
+  ],
+
   "tasks": [
-    { "task_key": "ingest_marketing", "spark_python_task": { "python_file": "ingest_marketing.py" }},
-    { "task_key": "ingest_crm", "spark_python_task": { "python_file": "ingest_crm.py" }},
-    { "task_key": "deduplication", "spark_python_task": { "python_file": "customer_deduplication.py" }},
-    { "task_key": "dq_checks", "spark_python_task": { "python_file": "data_quality_checks.py" }}
+    {
+      "task_key": "ingest_marketing",
+      "job_cluster_key": "cdp_cluster",
+      "spark_python_task": {
+        "python_file": "ingestion/ingest_marketing.py"
+      },
+      "retry_on_timeout": false,
+      "max_retries": 1
+    },
+    {
+      "task_key": "ingest_crm",
+      "job_cluster_key": "cdp_cluster",
+      "depends_on": [
+        { "task_key": "ingest_marketing" }
+      ],
+      "spark_python_task": {
+        "python_file": "ingestion/ingest_crm.py"
+      },
+      "max_retries": 1
+    },
+    {
+      "task_key": "customer_deduplication",
+      "job_cluster_key": "cdp_cluster",
+      "depends_on": [
+        { "task_key": "ingest_crm" }
+      ],
+      "spark_python_task": {
+        "python_file": "processing/customer_deduplication.py"
+      },
+      "max_retries": 1
+    },
+    {
+      "task_key": "data_quality_checks",
+      "job_cluster_key": "cdp_cluster",
+      "depends_on": [
+        { "task_key": "customer_deduplication" }
+      ],
+      "spark_python_task": {
+        "python_file": "processing/data_quality_checks.py"
+      },
+      "max_retries": 1
+    }
   ]
 }
