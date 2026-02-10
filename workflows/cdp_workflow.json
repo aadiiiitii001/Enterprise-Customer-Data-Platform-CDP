@@ -1,0 +1,9 @@
+{
+  "name": "Enterprise_CDP_Workflow",
+  "tasks": [
+    { "task_key": "ingest_marketing", "spark_python_task": { "python_file": "ingest_marketing.py" }},
+    { "task_key": "ingest_crm", "spark_python_task": { "python_file": "ingest_crm.py" }},
+    { "task_key": "deduplication", "spark_python_task": { "python_file": "customer_deduplication.py" }},
+    { "task_key": "dq_checks", "spark_python_task": { "python_file": "data_quality_checks.py" }}
+  ]
+}
